@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ingreso - Gimnasio StrongFit</title>
+  <meta name="description" content="Login seguro para el sistema de gestión del gimnasio StrongFit">
+  <style>
+    :root{
+      --bg:#0f1724; /* navy */
+      --card:#0b1220;
+      --accent:#ff6b6b; /* coral */
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.04);
+      font-family: Inter, Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg, rgba(14,17,23,1) 0%, rgba(11,14,20,1) 100%);
+      color: #e6eef6;
+      display:grid;
+      place-items:center;
+      padding:2rem;
+    }
+    .container{
+      width:100%;
+      max-width:960px;
+      display:grid;
+      grid-template-columns:1fr 420px;
+      gap:2rem;
+      align-items:center;
+    }
+    .hero{
+      padding:2.5rem;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:0 10px 30px rgba(2,6,23,0.6);
+      min-height:360px;
+    }
+    .hero h1{margin:0 0 .5rem 0;font-size:clamp(1.25rem,2.5vw,2rem)}
+    .hero p{margin:0;color:var(--muted);line-height:1.4}
+    .gym-brand{
+      display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb199);display:grid;place-items:center;font-weight:700;color:#111
+    }
+
+    /* card */
+    .card{
+      background:var(--card);
+      padding:2rem;
+      border-radius:14px;
+      box-shadow:0 8px 20px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    form{display:flex;flex-direction:column;gap:.9rem}
+    label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:.35rem}
+    .input{
+      padding:.75rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit;outline:none;font-size:1rem
+    }
+    .input:focus{box-shadow:0 6px 18px rgba(15,103,195,0.08);border-color:rgba(255,255,255,0.06)}
+    .row{display:flex;gap:.6rem;align-items:center;justify-content:space-between}
+    .btn{
+      padding:.9rem 1rem;border-radius:12px;border:none;font-weight:600;cursor:pointer;background:linear-gradient(90deg,var(--accent),#ff9e7a);color:#111;font-size:1rem
+    }
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:.7rem;border-radius:10px}
+    .small{font-size:.85rem;color:var(--muted)}
+    a{color:inherit;text-decoration:none}
+    .muted{color:var(--muted)}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent);margin:1rem 0}
+
+    /* responsive */
+    @media (max-width:880px){
+      .container{grid-template-columns:1fr;max-width:520px}
+      .hero{order:2}
+    }
+
+    /* small helper */
+    .error{color:#ffb4b4;font-size:.85rem}
+    .success{color:#c7ffd8;font-size:.85rem}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <section class="hero" aria-labelledby="welcome">
+      <div class="gym-brand">
+        <div class="logo" aria-hidden>SF</div>
+        <div>
+          <h2 id="welcome">StrongFit Gym</h2>
+          <p class="muted">Gestiona tus entrenamientos, reservas y membresía desde tu cuenta.</p>
+        </div>
+      </div>
+
+      <h1>Bienvenido de vuelta</h1>
+      <p>Inicia sesión para acceder al panel de administración de miembros y a tus reservas. Si no tienes cuenta, puedes registrarte.</p>
+
+      <div class="divider" aria-hidden></div>
+
+      <ul class="muted" style="padding-left:1rem;margin:0">
+        <li>Reserva clases en línea</li>
+        <li>Historial de asistencia</li>
+        <li>Pago y estado de membresía</li>
+      </ul>
+    </section>
+
+    <aside class="card" aria-labelledby="login-title">
+      <h3 id="login-title" style="margin:0 0 .5rem 0">Ingreso a la cuenta</h3>
+      <form id="loginForm" novalidate>
+        <div>
+          <label for="user">Correo o usuario</label>
+          <input id="user" name="user" class="input" type="text" placeholder="ej: juan@email.com" required aria-required="true">
+          <div id="userError" class="error" style="display:none"></div>
+        </div>
+
+        <div>
+          <label for="password">Contraseña</label>
+          <input id="password" name="password" class="input" type="password" placeholder="●●●●●●●" required aria-required="true" minlength="6">
+          <div id="passError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="row" style="align-items:center">
+          <label style="display:flex;gap:.5rem;align-items:center;cursor:pointer">
+            <input type="checkbox" id="remember"> <span class="small">Recordarme</span>
+          </label>
+          <a class="small muted" href="#">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn">Ingresar</button>
+
+        <div class="row" style="margin-top:.5rem;align-items:center">
+          <div class="divider" style="flex:1"></div>
+          <small class="small muted" style="padding:0 .6rem">o</small>
+          <div class="divider" style="flex:1"></div>
+        </div>
+
+        <button type="button" class="ghost" id="googleBtn" aria-label="Ingresar con Google">Ingresar con Google</button>
+
+        <p class="small muted" style="margin:.6rem 0 0">¿No tienes cuenta? <a href="#">Regístrate</a></p>
+
+        <div id="formMessage" role="status" aria-live="polite" style="margin-top:.6rem"></div>
+      </form>
+    </aside>
+  </main>
+
+  <script>
+    // Validación simple y simulación de envío
+    const form = document.getElementById('loginForm');
+    const user = document.getElementById('user');
+    const password = document.getElementById('password');
+    const userError = document.getElementById('userError');
+    const passError = document.getElementById('passError');
+    const formMessage = document.getElementById('formMessage');
+
+    function showError(el, msg){ el.textContent = msg; el.style.display = 'block'; }
+    function clearError(el){ el.textContent = ''; el.style.display = 'none'; }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      clearError(userError); clearError(passError); formMessage.textContent='';
+
+      let ok = true;
+      if(user.value.trim().length < 3){ showError(userError, 'Ingresa tu correo o usuario válido'); ok=false }
+      if(password.value.length < 6){ showError(passError, 'La contraseña debe tener al menos 6 caracteres'); ok=false }
+
+      if(!ok) return;
+
+      // Simulación: normalmente enviarías por fetch a /api/login
+      formMessage.textContent = '';
+      formMessage.className = '';
+      formMessage.textContent = 'Validando credenciales...';
+
+      // Simular respuesta
+      setTimeout(()=>{
+        // Ejemplo: credenciales fijas para demo: user: demo@demo.com pass: demo123
+        if((user.value === 'demo@demo.com' || user.value === 'demo') && password.value === 'demo123'){
+          formMessage.textContent = 'Ingreso correcto. Redirigiendo...';
+          formMessage.className = 'success';
+          // En una app real: window.location.href = '/dashboard'
+        }else{
+          formMessage.textContent = 'Usuario o contraseña incorrectos';
+          formMessage.className = 'error';
+        }
+      },800);
+    });
+
+    // Accesibilidad: submit con Enter en inputs
+    [user, password].forEach(i=>i.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Enter') form.dispatchEvent(new Event('submit', {cancelable:true}));
+    }));
+  </script>
+</body>
+</html>
