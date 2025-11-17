@@ -178,6 +178,9 @@
         if((user.value === 'demo@demo.com' || user.value === 'demo') && password.value === 'demo123'){
           formMessage.textContent = 'Ingreso correcto. Redirigiendo...';
           formMessage.className = 'success';
+          localStorage.setItem('usuarioActivo', user.value);
+          setTimeout(function(){window.location.href = 'home.html';},1500);
+          
           // En una app real: window.location.href = '/dashboard'
         }else{
           formMessage.textContent = 'Usuario o contraseña incorrectos';

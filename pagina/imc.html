@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora IMC & Objetivos - StrongFit</title>
+    <link rel="stylesheet" href="estiloHome.css">
+    <style>
+        .container-imc { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        input, select {
+            width: 100%; padding: 0.8rem; margin-bottom: 1rem;
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            color: white; border-radius: 8px;
+        }
+        .hidden { display: none; }
+        .result-box { margin-top: 2rem; text-align: center; padding: 2rem; background: rgba(0,0,0,0.2); border-radius: 12px; }
+        .imc-big { font-size: 3rem; font-weight: bold; color: var(--accent); margin: 0; }
+        .goal-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+        .goal-card { 
+            flex: 1; padding: 1rem; border: 1px solid var(--glass); 
+            border-radius: 8px; cursor: pointer; transition: 0.3s; 
+        }
+        .goal-card:hover { background: var(--glass); border-color: var(--accent); }
+        .goal-card.active { background: var(--accent); color: #000; }
+    </style>
+</head>
+<body>
+    
+    <<header>
+        <a href="home.html" class="logo"> 
+            <img src="img/logo.png" alt="logo">
+        </a>
+        <nav>
+            <a href="ejercicios.html" style="color:var(--muted); margin:0 10px;">Ejercicios</a>
+            <a href="alimentacion.html" style="color:var(--muted); margin:0 10px;">Alimentación</a>
+        </nav>
+    </header>
+
+    <main class="container-imc">
+        <section class="card">
+            <h1 style="text-align: center;">Calculadora Fitness 360°</h1>
+            <p style="text-align: center; color: var(--muted); margin-bottom: 2rem;">
+                Descubre tu estado actual y genera un plan personalizado.
+            </p>
+
+            <form id="imcForm">
+                <div class="grid-2">
+                    <div>
+                        <label>Peso (kg)</label>
+                        <input type="number" id="peso" placeholder="Ej: 75" required>
+                    </div>
+                    <div>
+                        <label>Altura (cm)</label>
+                        <input type="number" id="altura" placeholder="Ej: 175" required>
+                    </div>
+                    <div>
+                        <label>Edad</label>
+                        <input type="number" id="edad" placeholder="Ej: 25" required>
+                    </div>
+                    <div>
+                        <label>Género</label>
+                        <select id="genero">
+                            <option value="hombre">Hombre</option>
+                            <option value="mujer">Mujer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <label>Nivel de Actividad</label>
+                <select id="actividad">
+                    <option value="1.2">Sedentario (Poco o nada ejercicio)</option>
+                    <option value="1.375">Ligero (1-3 días por semana)</option>
+                    <option value="1.55">Moderado (3-5 días por semana)</option>
+                    <option value="1.725">Alto (6-7 días por semana)</option>
+                </select>
+
+                <button type="submit" class="btn" style="width: 100%;">Calcular Estado</button>
+            </form>
+
+            <div id="resultadoSection" class="hidden">
+                <div class="result-box">
+                    <h3>Tu IMC es</h3>
+                    <p id="imcValor" class="imc-big">0.0</p>
+                    <p id="imcTexto" style="color: var(--success);">Normal</p>
+                    <hr style="border-color: var(--glass); margin: 1rem 0;">
+                    <p>Tu Gasto Energético Diario (Mantenimiento): <strong id="tdeeValor">0</strong> kcal</p>
+                </div>
+
+                <h3 style="margin-top: 2rem; text-align: center;">Elige tu objetivo para generar rutinas:</h3>
+                <div class="goal-buttons">
+                    <div class="goal-card" onclick="setObjetivo('deficit')">
+                        <h4>🔥 Definición (Déficit)</h4>
+                        <p style="font-size: 0.9rem;">Perder grasa, mantener músculo.</p>
+                    </div>
+                    <div class="goal-card" onclick="setObjetivo('superavit')">
+                        <h4>💪 Volumen (Superávit)</h4>
+                        <p style="font-size: 0.9rem;">Ganar masa muscular y fuerza.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('imcForm');
+        const resultadoSection = document.getElementById('resultadoSection');
+        let TDEE = 0; // Variable global para guardar las calorías de mantenimiento
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const peso = parseFloat(document.getElementById('peso').value);
+            const altura = parseFloat(document.getElementById('altura').value);
+            const edad = parseFloat(document.getElementById('edad').value);
+            const genero = document.getElementById('genero').value;
+            const actividad = parseFloat(document.getElementById('actividad').value);
+
+            // 1. Calcular IMC
+            const alturaMetros = altura / 100;
+            const imc = (peso / (alturaMetros * alturaMetros)).toFixed(1);
+            
+            // Texto IMC
+            let texto = "";
+            if(imc < 18.5) texto = "Bajo peso";
+            else if(imc < 24.9) texto = "Peso Normal";
+            else if(imc < 29.9) texto = "Sobrepeso";
+            else texto = "Obesidad";
+
+            document.getElementById('imcValor').textContent = imc;
+            document.getElementById('imcTexto').textContent = texto;
+
+            // 2. Calcular Calorías (Formula Mifflin-St Jeor)
+            let tmb;
+            if(genero === 'hombre') {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) + 5;
+            } else {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
+            }
+            
+            TDEE = Math.round(tmb * actividad);
+            document.getElementById('tdeeValor').textContent = TDEE;
+
+            // Mostrar resultados
+            resultadoSection.classList.remove('hidden');
+            // Scroll suave hacia abajo
+            resultadoSection.scrollIntoView({behavior: "smooth"});
+        });
+
+        function setObjetivo(tipo) {
+            // Guardar en LocalStorage
+            localStorage.setItem('userObjetivo', tipo);
+            
+            let caloriasFinales = 0;
+            if(tipo === 'deficit') caloriasFinales = TDEE - 400; // Restamos 400 para bajar
+            else caloriasFinales = TDEE + 400; // Sumamos 400 para subir
+
+            localStorage.setItem('userCalorias', caloriasFinales);
+
+            alert(`¡Objetivo ${tipo.toUpperCase()} seleccionado!\nTu plan nutricional y de ejercicios ha sido actualizado.\n\nCalorías objetivo: ${caloriasFinales}`);
+            
+            // Redirigir al usuario para que vea sus cambios
+            if(confirm("¿Quieres ver tu plan de ejercicios ahora?")) {
+                window.location.href = 'ejercicios.html';
+            }
+        }
+    </script>
+</body>
+</html>

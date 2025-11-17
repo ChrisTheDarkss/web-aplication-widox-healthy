@@ -209,3 +209,151 @@ nav a:hover::after {
     }
 }
 
+/* =========================================
+   NUEVOS ESTILOS: SISTEMA FITNESS & IMC
+   (Pegar al final de estiloHome.css)
+   ========================================= */
+
+:root {
+    /* Variables basadas en tu diseño actual */
+    --accent: #2D0A4E;       /* Tu morado */
+    --accent-hover: #ffffff; /* Blanco al hacer hover */
+    --text-color: #ffffff;
+    --glass-bg: rgba(13, 13, 13, 0.85); /* Tu fondo oscuro semi-transparente */
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenedor principal para las páginas nuevas */
+.container-imc {
+    max-width: 900px;
+    margin: 100px auto 50px; /* Margen superior para no chocar con el header */
+    padding: 0 20px;
+}
+
+/* Tarjetas estilo "Widox Gym" */
+.card {
+    background: var(--glass-bg);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+    border: 1px solid rgba(45, 10, 78, 0.5); /* Borde morado sutil */
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    animation: aparecer 0.8s ease-out;
+}
+
+/* Formulario Grid (2 columnas) */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Inputs y Selects personalizados */
+input, select {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: white;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(45, 10, 78, 0.5);
+}
+
+/* Estilo para las opciones dentro del select (para que se vean negras y legibles) */
+option {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Botones (Adaptados a tu estilo .iconos a) */
+.btn {
+    display: block;
+    width: 100%;
+    background: var(--accent);
+    color: #FFFFFF;
+    padding: 15px;
+    border-radius: 20px;
+    border: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background: #FFFFFF;
+    color: #0D0D0D;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: white;
+}
+
+/* Sección de Resultados */
+.hidden { display: none; }
+
+.result-box {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 2rem;
+    background: rgba(45, 10, 78, 0.3); /* Fondo morado suave */
+    border-radius: 15px;
+    border: 1px solid var(--accent);
+}
+
+.imc-big {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(45, 10, 78, 0.8);
+    margin: 10px 0;
+}
+
+/* Tarjetas de selección de Objetivo (Déficit / Superávit) */
+.goal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.goal-card {
+    flex: 1;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.goal-card:hover {
+    background: var(--accent);
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(45, 10, 78, 0.4);
+}
+
+.goal-card h4 { margin-bottom: 10px; font-size: 1.2rem; }
+
+/* Responsivo para celular */
+@media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .goal-buttons { flex-direction: column; }
+    .container-imc { margin-top: 40px; }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimentación - Widox Gym</title>
+    <link rel="stylesheet" href="estiloHome.css">
+</head>
+<body>
+    
+    <header>
+        <a href="home.html" class="logo"> 
+            <img src="img/logo.png" alt="logo">
+        </a>
+        <nav class="nav-links">
+            <a href="ejercicios.html" class="nav-link">Ejercicios</a>
+            <a href="alimentacion.html" class="nav-link">Alimentación</a>
+            <a href="imc.html" class="nav-link">IMC</a>
+        </nav>
+        <div class="iconos">
+            <a href="login.html" id="linkLogin">login</a>
+        </div>
+    </header>
+
+    <main class="container-imc">
+        
+        <section class="card">
+            <h2>🍎 Contador de Calorías Diarias</h2>
+            <p style="color: #ccc; margin-bottom: 1rem;">Registra tus comidas del día para llevar el control.</p>
+            
+            <div class="grid-2">
+                <div>
+                    <label>Desayuno (kcal)</label>
+                    <input type="number" id="calDesayuno" placeholder="Ej: 400">
+                </div>
+                <div>
+                    <label>Almuerzo (kcal)</label>
+                    <input type="number" id="calAlmuerzo" placeholder="Ej: 600">
+                </div>
+                <div>
+                    <label>Cena (kcal)</label>
+                    <input type="number" id="calCena" placeholder="Ej: 300">
+                </div>
+                <div>
+                    <label>Snacks (kcal)</label>
+                    <input type="number" id="calSnack" placeholder="Ej: 150">
+                </div>
+            </div>
+            <button onclick="calcularTotal()" class="btn">Sumar Total Consumido</button>
+            <p id="totalConsumido" style="text-align: center; margin-top: 1rem; font-size: 1.2rem; font-weight: bold;"></p>
+        </section>
+
+        <div id="planNutricional">
+            <div class="card" style="text-align: center;">
+                <h3>¿No tienes un plan aún?</h3>
+                <p>Calcula tu IMC y elige un objetivo para ver tu dieta recomendada.</p>
+                <a href="imc.html" class="btn" style="width: auto; display: inline-block; margin-top: 1rem;">Ir a Calcular IMC</a>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Lógica para mostrar nombre de usuario en header (igual que home)
+        const usuario = localStorage.getItem('usuarioActivo');
+        const enlace = document.getElementById('linkLogin');
+        if (usuario && enlace) { enlace.textContent = usuario; enlace.href = "#"; }
+
+        // 1. Lógica Calculadora Simple
+        function calcularTotal() {
+            const d = Number(document.getElementById('calDesayuno').value);
+            const a = Number(document.getElementById('calAlmuerzo').value);
+            const c = Number(document.getElementById('calCena').value);
+            const s = Number(document.getElementById('calSnack').value);
+            const total = d + a + c + s;
+            document.getElementById('totalConsumido').innerHTML = `Total hoy: <span style="color:#4ade80">${total} kcal</span>`;
+        }
+
+        // 2. Lógica Plan Personalizado (Estilizado)
+        const objetivo = localStorage.getItem('userObjetivo');
+        const calorias = localStorage.getItem('userCalorias');
+        const contenedorNutri = document.getElementById('planNutricional');
+
+        if(objetivo && calorias) {
+            let titulo = "";
+            let listaComida = "";
+            let colorBorde = "";
+
+            if(objetivo === 'deficit') {
+                titulo = "🔥 Tu Meta: DEFICIT (Perder Grasa)";
+                colorBorde = "#ff6b6b"; // Rojo suave
+                listaComida = `
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥗 <strong>Verduras ilimitadas:</strong> Espinaca, lechuga, brócoli.</li>
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🐟 <strong>Proteína Magra:</strong> Pescado blanco, pollo, pavo.</li>
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍎 <strong>Fruta:</strong> Manzana verde, frutos rojos.</li>
+                    </ul>`;
+            } else {
+                titulo = "💪 Tu Meta: SUPERÁVIT (Ganar Músculo)";
+                colorBorde = "#4ade80"; // Verde
+                listaComida = `
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍚 <strong>Carbohidratos:</strong> Arroz, pasta, avena, papa.</li>
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥩 <strong>Proteína Fuerte:</strong> Carne roja, huevos enteros, atún.</li>
+                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥑 <strong>Grasas Buenas:</strong> Aguacate, mantequilla de maní.</li>
+                    </ul>`;
+            }
+
+            // Inyectamos HTML con clases .card y estilos corregidos
+            contenedorNutri.innerHTML = `
+                <div class="card" style="border-left: 5px solid ${colorBorde};">
+                    <h2 style="color: #fff; margin-bottom: 0.5rem;">${titulo}</h2>
+                    <p class="imc-big" style="font-size: 2.5rem;">${calorias} kcal <span style="font-size: 1rem; color: #ccc;">/ día</span></p>
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 0;">
+                    <h3 style="margin-bottom: 1rem;">Alimentos Recomendados</h3>
+                    ${listaComida}
+                    <button onclick="borrarDatos()" class="btn-outline" style="margin-top: 1.5rem; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%;">🔄 Recalcular Objetivo</button>
+                </div>
+            `;
+        }
+
+        function borrarDatos() {
+            if(confirm("¿Seguro que quieres borrar tu plan actual?")){
+                localStorage.removeItem('userObjetivo');
+                localStorage.removeItem('userCalorias');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -17,7 +17,7 @@
             <a href="imc.html" class="nav-link">IMC</a>
         </nav>
         <div class="iconos">
-            <a href="login.html">login</a>
+            <a href="login.html" id="linkLogin">login</a>
         </div>
     </header>
 
@@ -34,6 +34,27 @@
     <a href="imc.html">
         <img src="img/imc.jpg" alt="Foto" class="imc" width="400">
     </a>
+<script>
+    // 1. Buscamos si hay un usuario guardado
+    const usuario = localStorage.getItem('usuarioActivo');
+    const enlace = document.getElementById('linkLogin');
+
+    // 2. Si existe un usuario, cambiamos el texto
+    if (usuario && enlace) {
+        // Cambiamos "login" por el nombre del usuario
+        enlace.textContent = usuario; 
+        
+        // Opcional: Cambiamos el link para que ahora sirva para cerrar sesión
+        enlace.href = "#"; 
+        enlace.onclick = function() {
+            // Al hacer click, borramos el usuario (Cerrar sesión)
+            localStorage.removeItem('usuarioActivo');
+            window.location.reload(); // Recargamos la página
+        };
+    }
+</script>
+</body>
+</html>
 </div>
 </body>
 </html>

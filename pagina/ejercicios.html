@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicios - Widox Gym</title>
+    <link rel="stylesheet" href="estiloHome.css">
+</head>
+<body>
+
+    <header>
+        <a href="home.html" class="logo"> 
+            <img src="img/logo.png" alt="logo">
+        </a>
+        <nav class="nav-links">
+            <a href="ejercicios.html" class="nav-link">Ejercicios</a>
+            <a href="alimentacion.html" class="nav-link">Alimentación</a>
+            <a href="imc.html" class="nav-link">IMC</a>
+        </nav>
+        <div class="iconos">
+            <a href="login.html" id="linkLogin">login</a>
+        </div>
+    </header>
+
+    <main class="container-imc">
+        
+        <div id="recomendacionPersonalizada"></div>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Rutina de Pecho</h2>
+            <p style="color: #ccc; margin-bottom: 1rem;">Ejercicios básicos para pectoral.</p>
+            
+            <div class="grid-2">
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Press de Banca</h3>
+                    <p>4 series x 10 repeticiones</p>
+                    <small style="color: #999;">Barra o mancuernas</small>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Aperturas</h3>
+                    <p>3 series x 12 repeticiones</p>
+                    <small style="color: #999;">En máquina o mancuernas</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Rutina de Espalda</h2>
+            <div class="grid-2">
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Jalón al pecho</h3>
+                    <p>4 series x 12 repeticiones</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Remo con barra</h3>
+                    <p>4 series x 10 repeticiones</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Login header
+        const usuario = localStorage.getItem('usuarioActivo');
+        const enlace = document.getElementById('linkLogin');
+        if (usuario && enlace) { enlace.textContent = usuario; enlace.href = "#"; }
+
+        // Lógica Recomendación Personalizada
+        const objetivo = localStorage.getItem('userObjetivo');
+        const contenedor = document.getElementById('recomendacionPersonalizada');
+
+        if(objetivo) {
+            let contenidoHTML = '';
+            
+            if(objetivo === 'deficit') {
+                // Diseño para DEFICIT
+                contenidoHTML = `
+                <div class="card" style="border: 2px solid #ff6b6b; background: rgba(45, 10, 78, 0.6);">
+                    <h2 style="color: #ff6b6b;">🔥 Tu Circuito Quema-Grasa</h2>
+                    <p style="color: #fff;">Como estás en déficit, añade este cardio HIIT al final de tu rutina:</p>
+                    <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
+                        <li>⚡ <strong>Burpees:</strong> 3 series de 12 repeticiones</li>
+                        <li>⚡ <strong>Mountain Climbers:</strong> 4 series de 30 segundos</li>
+                        <li>⚡ <strong>Saltar la cuerda:</strong> 10 minutos sin parar</li>
+                    </ul>
+                </div>`;
+            } else if (objetivo === 'superavit') {
+                // Diseño para VOLUMEN
+                contenidoHTML = `
+                <div class="card" style="border: 2px solid #4ade80; background: rgba(45, 10, 78, 0.6);">
+                    <h2 style="color: #4ade80;">💪 Tu Extra de Hipertrofia</h2>
+                    <p style="color: #fff;">Para aprovechar el volumen, añade estos ejercicios de fuerza:</p>
+                    <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
+                        <li>🦍 <strong>Peso Muerto:</strong> 5 series de 5 repeticiones (Pesado)</li>
+                        <li>🦍 <strong>Dominadas con peso:</strong> 4 series al fallo</li>
+                        <li>🦍 <strong>Descanso:</strong> 2 a 3 minutos entre series</li>
+                    </ul>
+                </div>`;
+            }
+            
+            contenedor.innerHTML = contenidoHTML;
+        }
+    </script>
+</body>
+</html>
