@@ -15,3 +15,4 @@ echo "Frontend: localhost:3000"
 echo "Sistema listo!"
 echo "Accede a: http://localhost:3000"
 echo "Verifica API: http://localhost:3000/api"
+pause
