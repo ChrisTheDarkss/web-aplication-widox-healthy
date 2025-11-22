@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora IMC & Objetivos - StrongFit</title>
+    <title>Calculadora IMC & Objetivos - Widox Gym</title>
     <link rel="stylesheet" href="estiloHome.css">
     <style>
         .container-imc { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
@@ -27,14 +27,18 @@
 </head>
 <body>
     
-    <<header>
+    <header>
         <a href="home.html" class="logo"> 
             <img src="img/logo.png" alt="logo">
         </a>
-        <nav>
-            <a href="ejercicios.html" style="color:var(--muted); margin:0 10px;">Ejercicios</a>
-            <a href="alimentacion.html" style="color:var(--muted); margin:0 10px;">Alimentación</a>
+        <nav class="nav-links">
+            <a href="ejercicios.html" class="nav-link">Ejercicios</a>
+            <a href="alimentacion.html" class="nav-link">Alimentación</a>
+            <a href="imc.html" class="nav-link">IMC</a>
         </nav>
+        <div class="iconos">
+            <a href="login.html" id="linkLogin">login</a>
+        </div>
     </header>
 
     <main class="container-imc">
@@ -103,6 +107,38 @@
     </main>
 
     <script>
+        // Verificar autenticación y mostrar usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            const enlace = document.getElementById('linkLogin');
+
+            // Verificar autenticación
+            if (!usuario || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Mostrar información del usuario
+            if (usuario && token && enlace) {
+                try {
+                    const userData = JSON.parse(usuario);
+                    enlace.textContent = `Cerrar Sesión (${userData.nombre})`;
+                    enlace.href = "#";
+                    enlace.onclick = function() {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                    };
+                } catch (error) {
+                    console.error('Error al cargar datos del usuario:', error);
+                    enlace.textContent = 'login';
+                    enlace.href = 'login.html';
+                    enlace.onclick = null;
+                }
+            }
+        });
+
         const form = document.getElementById('imcForm');
         const resultadoSection = document.getElementById('resultadoSection');
         let TDEE = 0; // Variable global para guardar las calorías de mantenimiento
@@ -122,13 +158,24 @@
             
             // Texto IMC
             let texto = "";
-            if(imc < 18.5) texto = "Bajo peso";
-            else if(imc < 24.9) texto = "Peso Normal";
-            else if(imc < 29.9) texto = "Sobrepeso";
-            else texto = "Obesidad";
+            let color = "";
+            if(imc < 18.5) {
+                texto = "Bajo peso";
+                color = "#ff6b6b";
+            } else if(imc < 24.9) {
+                texto = "Peso Normal";
+                color = "#4ade80";
+            } else if(imc < 29.9) {
+                texto = "Sobrepeso";
+                color = "#ffa726";
+            } else {
+                texto = "Obesidad";
+                color = "#ff6b6b";
+            }
 
             document.getElementById('imcValor').textContent = imc;
             document.getElementById('imcTexto').textContent = texto;
+            document.getElementById('imcTexto').style.color = color;
 
             // 2. Calcular Calorías (Formula Mifflin-St Jeor)
             let tmb;
@@ -140,6 +187,20 @@
             
             TDEE = Math.round(tmb * actividad);
             document.getElementById('tdeeValor').textContent = TDEE;
+
+            // Guardar datos del cálculo (para futura integración con API)
+            const calculoData = {
+                peso: peso,
+                altura: altura,
+                edad: edad,
+                genero: genero,
+                actividad: actividad,
+                imc: parseFloat(imc),
+                tdee: TDEE,
+                fecha: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ultimoCalculoIMC', JSON.stringify(calculoData));
 
             // Mostrar resultados
             resultadoSection.classList.remove('hidden');
@@ -157,13 +218,183 @@
 
             localStorage.setItem('userCalorias', caloriasFinales);
 
+            // Guardar objetivo en datos del usuario (para futura integración con API)
+            const usuario = localStorage.getItem('user');
+            if (usuario) {
+                try {
+                    const userData = JSON.parse(usuario);
+                    userData.objetivo = tipo;
+                    userData.caloriasObjetivo = caloriasFinales;
+                    localStorage.setItem('user', JSON.stringify(userData));
+                } catch (error) {
+                    console.error('Error actualizando datos del usuario:', error);
+                }
+            }
+
             alert(`¡Objetivo ${tipo.toUpperCase()} seleccionado!\nTu plan nutricional y de ejercicios ha sido actualizado.\n\nCalorías objetivo: ${caloriasFinales}`);
             
             // Redirigir al usuario para que vea sus cambios
             if(confirm("¿Quieres ver tu plan de ejercicios ahora?")) {
                 window.location.href = 'ejercicios.html';
+            } else {
+                window.location.href = 'alimentacion.html';
             }
         }
+
+        // Función para guardar datos de IMC en la API (para futura integración)
+        function guardarDatosIMC(datos) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Aquí puedes integrar con tu API para guardar los datos
+            console.log('Guardando datos de IMC:', datos);
+            
+            // Ejemplo de cómo sería la llamada a la API:
+            /*
+            fetch('/api/imc/registro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos de IMC guardados:', data);
+            })
+            .catch(error => {
+                console.error('Error guardando datos de IMC:', error);
+            });
+            */
+        }
     </script>
+<script>
+    form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const peso = parseFloat(document.getElementById('peso').value);
+    const altura = parseFloat(document.getElementById('altura').value);
+    const edad = parseFloat(document.getElementById('edad').value);
+    const genero = document.getElementById('genero').value;
+    const actividadTexto = document.getElementById('actividad').options[document.getElementById('actividad').selectedIndex].text;
+    const actividad = parseFloat(document.getElementById('actividad').value);
+
+    // 1. Calcular IMC
+    const alturaMetros = altura / 100;
+    const imc = (peso / (alturaMetros * alturaMetros)).toFixed(1);
+    
+    // Texto IMC
+    let texto = "";
+    let color = "";
+    if(imc < 18.5) {
+        texto = "Bajo peso";
+        color = "#ff6b6b";
+    } else if(imc < 24.9) {
+        texto = "Peso Normal";
+        color = "#4ade80";
+    } else if(imc < 29.9) {
+        texto = "Sobrepeso";
+        color = "#ffa726";
+    } else {
+        texto = "Obesidad";
+        color = "#ff6b6b";
+    }
+
+    document.getElementById('imcValor').textContent = imc;
+    document.getElementById('imcTexto').textContent = texto;
+    document.getElementById('imcTexto').style.color = color;
+
+    // 2. Calcular Calorías (Formula Mifflin-St Jeor)
+    let tmb;
+    if(genero === 'hombre') {
+        tmb = (10 * peso) + (6.25 * altura) - (5 * edad) + 5;
+    } else {
+        tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
+    }
+    
+    TDEE = Math.round(tmb * actividad);
+    document.getElementById('tdeeValor').textContent = TDEE;
+
+    // Guardar en la base de datos
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/imc/calcular', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                peso: peso,
+                altura: altura,
+                edad: edad,
+                genero: genero,
+                nivel_actividad: actividadTexto,
+                imc: parseFloat(imc),
+                tdee: TDEE
+            })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            console.error('Error guardando en BD:', data.error);
+        }
+    } catch (error) {
+        console.error('Error conectando con la API:', error);
+    }
+
+    // Mostrar resultados
+    resultadoSection.classList.remove('hidden');
+    resultadoSection.scrollIntoView({behavior: "smooth"});
+});
+
+async function setObjetivo(tipo) {
+    let caloriasFinales = 0;
+    if(tipo === 'deficit') caloriasFinales = TDEE - 400;
+    else caloriasFinales = TDEE + 400;
+
+    // Guardar objetivo en la base de datos
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/imc/calcular', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                peso: parseFloat(document.getElementById('peso').value),
+                altura: parseFloat(document.getElementById('altura').value),
+                edad: parseFloat(document.getElementById('edad').value),
+                genero: document.getElementById('genero').value,
+                nivel_actividad: document.getElementById('actividad').options[document.getElementById('actividad').selectedIndex].text,
+                imc: parseFloat(document.getElementById('imcValor').textContent),
+                tdee: TDEE,
+                objetivo: tipo,
+                calorias_objetivo: caloriasFinales
+            })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            console.error('Error guardando objetivo:', data.error);
+        }
+    } catch (error) {
+        console.error('Error conectando con la API:', error);
+    }
+
+    localStorage.setItem('userObjetivo', tipo);
+    localStorage.setItem('userCalorias', caloriasFinales);
+
+    alert(`¡Objetivo ${tipo.toUpperCase()} seleccionado!\nCalorías objetivo: ${caloriasFinales}`);
+    
+    if(confirm("¿Quieres ver tu plan de ejercicios ahora?")) {
+        window.location.href = 'ejercicios.html';
+    } else {
+        window.location.href = 'alimentacion.html';
+    }
+}
+</script>
 </body>
 </html>

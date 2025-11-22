@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema CRUD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-content {
+            padding: 40px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .users-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .users-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">Sistema CRUD</div>
+                <div class="user-info">
+                    <span id="userName">Usuario</span>
+                    <button class="btn" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div id="message" class="message"></div>
+
+            <div class="card">
+                <h2>Mi Perfil</h2>
+                <div class="profile-info" id="profileInfo">
+                    <!-- La información del perfil se cargará aquí -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Editar Perfil</h2>
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label for="editNombre">Nombre</label>
+                        <input type="text" id="editNombre" name="nombre" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Actualizar Perfil</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Usuarios Registrados</h2>
+                <table class="users-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Fecha de Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los usuarios se cargarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Acciones</h2>
+                <div class="actions">
+                    <button class="btn-danger" onclick="deleteAccount()">Eliminar Mi Cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Verificar autenticación
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Mostrar nombre de usuario
+            const userData = JSON.parse(user);
+            document.getElementById('userName').textContent = userData.nombre;
+            document.getElementById('editNombre').value = userData.nombre;
+
+            // Cargar datos del perfil
+            loadProfile();
+            loadUsers();
+        });
+
+        // Cargar perfil
+        async function loadProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/perfil`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProfile(data.user);
+                } else if (response.status === 401) {
+                    // Token inválido o expirado
+                    logout();
+                } else {
+                    showMessage('Error al cargar el perfil', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Mostrar perfil
+        function displayProfile(user) {
+            const profileInfo = document.getElementById('profileInfo');
+            profileInfo.innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">ID</div>
+                    <div class="info-value">${user.id}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nombre</div>
+                    <div class="info-value">${user.nombre}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">${user.email}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Fecha de Registro</div>
+                    <div class="info-value">${new Date(user.fecha_registro).toLocaleDateString()}</div>
+                </div>
+            `;
+        }
+
+        // Cargar lista de usuarios
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/usuarios`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayUsers(data.usuarios);
+                } else if (response.status === 401) {
+                    logout();
+                } else {
+                    showMessage('Error al cargar usuarios', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Mostrar usuarios en tabla
+        function displayUsers(users) {
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.nombre}</td>
+                    <td>${user.email}</td>
+                    <td>${new Date(user.fecha_registro).toLocaleDateString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Actualizar perfil
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('editNombre').value;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE}/perfil`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ nombre })
+                });
+
+                if (response.ok) {
+                    showMessage('Perfil actualizado exitosamente', 'success');
+                    
+                    // Actualizar datos en localStorage
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    user.nombre = nombre;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    // Actualizar UI
+                    document.getElementById('userName').textContent = nombre;
+                    loadProfile();
+                    loadUsers();
+                } else if (response.status === 401) {
+                    logout();
+                } else {
+                    const data = await response.json();
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+                console.error('Error:', error);
+            }
+        });
+
+        // Eliminar cuenta
+        async function deleteAccount() {
+            if (!confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                const response = await fetch(`${API_BASE}/usuario/${user.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showMessage('Cuenta eliminada exitosamente', 'success');
+                    setTimeout(() => {
+                        logout();
+                    }, 2000);
+                } else if (response.status === 401) {
+                    logout();
+                } else {
+                    const data = await response.json();
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Cerrar sesión
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar mensajes
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

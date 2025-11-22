@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ingreso - Gimnasio StrongFit</title>
-  <meta name="description" content="Login seguro para el sistema de gestión del gimnasio StrongFit">
+  <title>Ingreso - Widox Gym</title>
+  <meta name="description" content="Login seguro para el sistema de gestión del gimnasio Widox Gym">
   <style>
     :root{
       --bg:#0f1724; /* navy */
@@ -87,22 +87,22 @@
   <main class="container" role="main">
     <section class="hero" aria-labelledby="welcome">
       <div class="gym-brand">
-        <div class="logo" aria-hidden>SF</div>
+        <div class="logo" aria-hidden>WG</div>
         <div>
-          <h2 id="welcome">StrongFit Gym</h2>
-          <p class="muted">Gestiona tus entrenamientos, reservas y membresía desde tu cuenta.</p>
+          <h2 id="welcome">Widox Gym</h2>
+          <p class="muted">Gestiona tus entrenamientos, rutinas y progreso desde tu cuenta.</p>
         </div>
       </div>
 
       <h1>Bienvenido de vuelta</h1>
-      <p>Inicia sesión para acceder al panel de administración de miembros y a tus reservas. Si no tienes cuenta, puedes registrarte.</p>
+      <p>Inicia sesión para acceder a tus rutinas personalizadas, seguimiento de IMC y planes de alimentación.</p>
 
       <div class="divider" aria-hidden></div>
 
       <ul class="muted" style="padding-left:1rem;margin:0">
-        <li>Reserva clases en línea</li>
-        <li>Historial de asistencia</li>
-        <li>Pago y estado de membresía</li>
+        <li>Rutinas de ejercicios personalizadas</li>
+        <li>Seguimiento de IMC y progreso</li>
+        <li>Planes de alimentación según tus objetivos</li>
       </ul>
     </section>
 
@@ -110,9 +110,9 @@
       <h3 id="login-title" style="margin:0 0 .5rem 0">Ingreso a la cuenta</h3>
       <form id="loginForm" novalidate>
         <div>
-          <label for="user">Correo o usuario</label>
-          <input id="user" name="user" class="input" type="text" placeholder="ej: juan@email.com" required aria-required="true">
-          <div id="userError" class="error" style="display:none"></div>
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" class="input" type="email" placeholder="ej: juan@email.com" required aria-required="true">
+          <div id="emailError" class="error" style="display:none"></div>
         </div>
 
         <div>
@@ -138,7 +138,7 @@
 
         <button type="button" class="ghost" id="googleBtn" aria-label="Ingresar con Google">Ingresar con Google</button>
 
-        <p class="small muted" style="margin:.6rem 0 0">¿No tienes cuenta? <a href="#">Regístrate</a></p>
+        <p class="small muted" style="margin:.6rem 0 0">¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
 
         <div id="formMessage" role="status" aria-live="polite" style="margin-top:.6rem"></div>
       </form>
@@ -146,53 +146,146 @@
   </main>
 
   <script>
-    // Validación simple y simulación de envío
+    // Configuración
+    const API_BASE = '/api';
+
+    // Elementos del DOM
     const form = document.getElementById('loginForm');
-    const user = document.getElementById('user');
+    const email = document.getElementById('email');
     const password = document.getElementById('password');
-    const userError = document.getElementById('userError');
+    const emailError = document.getElementById('emailError');
     const passError = document.getElementById('passError');
     const formMessage = document.getElementById('formMessage');
 
-    function showError(el, msg){ el.textContent = msg; el.style.display = 'block'; }
-    function clearError(el){ el.textContent = ''; el.style.display = 'none'; }
+    // Funciones de utilidad
+    function showError(el, msg){ 
+        el.textContent = msg; 
+        el.style.display = 'block'; 
+    }
+    
+    function clearError(el){ 
+        el.textContent = ''; 
+        el.style.display = 'none'; 
+    }
+    
+    function showFormMessage(text, type) {
+        formMessage.textContent = text;
+        formMessage.className = type;
+        formMessage.style.display = 'block';
+    }
 
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      clearError(userError); clearError(passError); formMessage.textContent='';
-
-      let ok = true;
-      if(user.value.trim().length < 3){ showError(userError, 'Ingresa tu correo o usuario válido'); ok=false }
-      if(password.value.length < 6){ showError(passError, 'La contraseña debe tener al menos 6 caracteres'); ok=false }
-
-      if(!ok) return;
-
-      // Simulación: normalmente enviarías por fetch a /api/login
-      formMessage.textContent = '';
-      formMessage.className = '';
-      formMessage.textContent = 'Validando credenciales...';
-
-      // Simular respuesta
-      setTimeout(()=>{
-        // Ejemplo: credenciales fijas para demo: user: demo@demo.com pass: demo123
-        if((user.value === 'demo@demo.com' || user.value === 'demo') && password.value === 'demo123'){
-          formMessage.textContent = 'Ingreso correcto. Redirigiendo...';
-          formMessage.className = 'success';
-          localStorage.setItem('usuarioActivo', user.value);
-          setTimeout(function(){window.location.href = 'home.html';},1500);
-          
-          // En una app real: window.location.href = '/dashboard'
-        }else{
-          formMessage.textContent = 'Usuario o contraseña incorrectos';
-          formMessage.className = 'error';
+    // Verificar si ya está autenticado
+    window.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        
+        if (token && user) {
+            // Si ya está autenticado, redirigir al home
+            window.location.href = 'home.html';
         }
-      },800);
+        
+        // Cargar email guardado si existe
+        const savedEmail = localStorage.getItem('savedEmail');
+        if (savedEmail) {
+            email.value = savedEmail;
+            document.getElementById('remember').checked = true;
+        }
+    });
+
+    // Manejo del formulario
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Limpiar errores previos
+        clearError(emailError);
+        clearError(passError);
+        formMessage.textContent = '';
+        formMessage.className = '';
+
+        let isValid = true;
+
+        // Validaciones
+        if (!email.value.trim()) {
+            showError(emailError, 'El correo electrónico es requerido');
+            isValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+            showError(emailError, 'Ingresa un correo electrónico válido');
+            isValid = false;
+        }
+
+        if (!password.value) {
+            showError(passError, 'La contraseña es requerida');
+            isValid = false;
+        } else if (password.value.length < 6) {
+            showError(passError, 'La contraseña debe tener al menos 6 caracteres');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Mostrar estado de carga
+        showFormMessage('Validando credenciales...', '');
+
+        try {
+            // Enviar datos al backend
+            const response = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email.value.trim(),
+                    password: password.value
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Login exitoso
+                showFormMessage('¡Ingreso exitoso! Redirigiendo...', 'success');
+                
+                // Guardar token y datos del usuario
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Guardar email si está marcado "Recordarme"
+                if (document.getElementById('remember').checked) {
+                    localStorage.setItem('savedEmail', email.value.trim());
+                } else {
+                    localStorage.removeItem('savedEmail');
+                }
+                
+                // Redirigir al home después de 1 segundo
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 1000);
+                
+            } else {
+                // Error del servidor
+                showFormMessage(data.error || 'Error en el servidor', 'error');
+            }
+            
+        } catch (error) {
+            // Error de conexión
+            console.error('Error de conexión:', error);
+            showFormMessage('Error de conexión. Verifica que el servidor esté ejecutándose.', 'error');
+        }
     });
 
     // Accesibilidad: submit con Enter en inputs
-    [user, password].forEach(i=>i.addEventListener('keydown', (ev)=>{
-      if(ev.key === 'Enter') form.dispatchEvent(new Event('submit', {cancelable:true}));
-    }));
+    [email, password].forEach(input => {
+        input.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') {
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        });
+    });
+
+    // Botón de Google (placeholder)
+    document.getElementById('googleBtn').addEventListener('click', () => {
+        showFormMessage('Login con Google no disponible temporalmente', 'error');
+    });
   </script>
 </body>
 </html>

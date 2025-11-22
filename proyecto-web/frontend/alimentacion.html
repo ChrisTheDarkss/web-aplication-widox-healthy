@@ -59,12 +59,82 @@
         </div>
 
     </main>
-
+    
     <script>
-        // Lógica para mostrar nombre de usuario en header (igual que home)
-        const usuario = localStorage.getItem('usuarioActivo');
-        const enlace = document.getElementById('linkLogin');
-        if (usuario && enlace) { enlace.textContent = usuario; enlace.href = "#"; }
+        // Verificar autenticación y mostrar usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            const enlace = document.getElementById('linkLogin');
+
+            // Verificar autenticación
+            if (!usuario || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Mostrar información del usuario
+            if (usuario && token && enlace) {
+                try {
+                    const userData = JSON.parse(usuario);
+                    enlace.textContent = `Cerrar Sesión (${userData.nombre})`;
+                    enlace.href = "#";
+                    enlace.onclick = function() {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                    };
+                } catch (error) {
+                    console.error('Error al cargar datos del usuario:', error);
+                    enlace.textContent = 'login';
+                    enlace.href = 'login.html';
+                    enlace.onclick = null;
+                }
+            }
+
+            // 2. Lógica Plan Personalizado (Estilizado)
+            const objetivo = localStorage.getItem('userObjetivo');
+            const calorias = localStorage.getItem('userCalorias');
+            const contenedorNutri = document.getElementById('planNutricional');
+
+            if(objetivo && calorias) {
+                let titulo = "";
+                let listaComida = "";
+                let colorBorde = "";
+
+                if(objetivo === 'deficit') {
+                    titulo = "🔥 Tu Meta: DEFICIT (Perder Grasa)";
+                    colorBorde = "#ff6b6b"; // Rojo suave
+                    listaComida = `
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥗 <strong>Verduras ilimitadas:</strong> Espinaca, lechuga, brócoli.</li>
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🐟 <strong>Proteína Magra:</strong> Pescado blanco, pollo, pavo.</li>
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍎 <strong>Fruta:</strong> Manzana verde, frutos rojos.</li>
+                        </ul>`;
+                } else {
+                    titulo = "💪 Tu Meta: SUPERÁVIT (Ganar Músculo)";
+                    colorBorde = "#4ade80"; // Verde
+                    listaComida = `
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍚 <strong>Carbohidratos:</strong> Arroz, pasta, avena, papa.</li>
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥩 <strong>Proteína Fuerte:</strong> Carne roja, huevos enteros, atún.</li>
+                            <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥑 <strong>Grasas Buenas:</strong> Aguacate, mantequilla de maní.</li>
+                        </ul>`;
+                }
+
+                // Inyectamos HTML con clases .card y estilos corregidos
+                contenedorNutri.innerHTML = `
+                    <div class="card" style="border-left: 5px solid ${colorBorde};">
+                        <h2 style="color: #fff; margin-bottom: 0.5rem;">${titulo}</h2>
+                        <p class="imc-big" style="font-size: 2.5rem;">${calorias} kcal <span style="font-size: 1rem; color: #ccc;">/ día</span></p>
+                        <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 0;">
+                        <h3 style="margin-bottom: 1rem;">Alimentos Recomendados</h3>
+                        ${listaComida}
+                        <button onclick="borrarDatos()" class="btn-outline" style="margin-top: 1.5rem; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%;">🔄 Recalcular Objetivo</button>
+                    </div>
+                `;
+            }
+        });
 
         // 1. Lógica Calculadora Simple
         function calcularTotal() {
@@ -74,49 +144,10 @@
             const s = Number(document.getElementById('calSnack').value);
             const total = d + a + c + s;
             document.getElementById('totalConsumido').innerHTML = `Total hoy: <span style="color:#4ade80">${total} kcal</span>`;
-        }
-
-        // 2. Lógica Plan Personalizado (Estilizado)
-        const objetivo = localStorage.getItem('userObjetivo');
-        const calorias = localStorage.getItem('userCalorias');
-        const contenedorNutri = document.getElementById('planNutricional');
-
-        if(objetivo && calorias) {
-            let titulo = "";
-            let listaComida = "";
-            let colorBorde = "";
-
-            if(objetivo === 'deficit') {
-                titulo = "🔥 Tu Meta: DEFICIT (Perder Grasa)";
-                colorBorde = "#ff6b6b"; // Rojo suave
-                listaComida = `
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥗 <strong>Verduras ilimitadas:</strong> Espinaca, lechuga, brócoli.</li>
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🐟 <strong>Proteína Magra:</strong> Pescado blanco, pollo, pavo.</li>
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍎 <strong>Fruta:</strong> Manzana verde, frutos rojos.</li>
-                    </ul>`;
-            } else {
-                titulo = "💪 Tu Meta: SUPERÁVIT (Ganar Músculo)";
-                colorBorde = "#4ade80"; // Verde
-                listaComida = `
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🍚 <strong>Carbohidratos:</strong> Arroz, pasta, avena, papa.</li>
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥩 <strong>Proteína Fuerte:</strong> Carne roja, huevos enteros, atún.</li>
-                        <li style="margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🥑 <strong>Grasas Buenas:</strong> Aguacate, mantequilla de maní.</li>
-                    </ul>`;
-            }
-
-            // Inyectamos HTML con clases .card y estilos corregidos
-            contenedorNutri.innerHTML = `
-                <div class="card" style="border-left: 5px solid ${colorBorde};">
-                    <h2 style="color: #fff; margin-bottom: 0.5rem;">${titulo}</h2>
-                    <p class="imc-big" style="font-size: 2.5rem;">${calorias} kcal <span style="font-size: 1rem; color: #ccc;">/ día</span></p>
-                    <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 0;">
-                    <h3 style="margin-bottom: 1rem;">Alimentos Recomendados</h3>
-                    ${listaComida}
-                    <button onclick="borrarDatos()" class="btn-outline" style="margin-top: 1.5rem; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%;">🔄 Recalcular Objetivo</button>
-                </div>
-            `;
+            
+            // Guardar en localStorage para futura integración con API
+            const hoy = new Date().toDateString();
+            localStorage.setItem(`calorias_${hoy}`, total);
         }
 
         function borrarDatos() {
@@ -126,6 +157,77 @@
                 location.reload();
             }
         }
+
+        // Función para guardar registro de calorías (para futura integración con API)
+        function guardarRegistroCalorias(calorias, fecha) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Aquí puedes integrar con tu API para guardar el registro
+            console.log('Guardando registro de calorías:', { calorias, fecha });
+            
+            // Ejemplo de cómo sería la llamada a la API:
+            /*
+            fetch('/api/alimentacion/registro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    calorias: calorias,
+                    fecha: fecha,
+                    tipo: 'diario'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Registro guardado:', data);
+            })
+            .catch(error => {
+                console.error('Error guardando registro:', error);
+            });
+            */
+        }
     </script>
+
+<script>
+    async function calcularTotal() {
+    const d = Number(document.getElementById('calDesayuno').value) || 0;
+    const a = Number(document.getElementById('calAlmuerzo').value) || 0;
+    const c = Number(document.getElementById('calCena').value) || 0;
+    const s = Number(document.getElementById('calSnack').value) || 0;
+    const total = d + a + c + s;
+    
+    document.getElementById('totalConsumido').innerHTML = `Total hoy: <span style="color:#4ade80">${total} kcal</span>`;
+    
+    // Guardar en la base de datos
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/alimentacion/registro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                desayuno: d,
+                almuerzo: a,
+                cena: c,
+                snacks: s
+            })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Registro guardado:', data);
+        } else {
+            console.error('Error guardando registro:', data.error);
+        }
+    } catch (error) {
+        console.error('Error conectando con la API:', error);
+    }
+}
+</script>
 </body>
 </html>

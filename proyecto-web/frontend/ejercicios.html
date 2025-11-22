@@ -58,48 +58,176 @@
             </div>
         </section>
 
+        <section class="card">
+            <h2>🦵 Rutina de Piernas</h2>
+            <div class="grid-2">
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Sentadillas</h3>
+                    <p>4 series x 12 repeticiones</p>
+                    <small style="color: #999;">Con barra o peso corporal</small>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Prensa de Piernas</h3>
+                    <p>4 series x 10 repeticiones</p>
+                    <small style="color: #999;">En máquina</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💪 Rutina de Hombros</h2>
+            <div class="grid-2">
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Press Militar</h3>
+                    <p>4 series x 10 repeticiones</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <h3 style="color: var(--accent);">Elevaciones Laterales</h3>
+                    <p>3 series x 15 repeticiones</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <script>
-        // Login header
-        const usuario = localStorage.getItem('usuarioActivo');
-        const enlace = document.getElementById('linkLogin');
-        if (usuario && enlace) { enlace.textContent = usuario; enlace.href = "#"; }
+        // Verificar autenticación y mostrar usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            const enlace = document.getElementById('linkLogin');
 
-        // Lógica Recomendación Personalizada
-        const objetivo = localStorage.getItem('userObjetivo');
-        const contenedor = document.getElementById('recomendacionPersonalizada');
+            // Verificar autenticación
+            if (!usuario || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
 
-        if(objetivo) {
-            let contenidoHTML = '';
-            
-            if(objetivo === 'deficit') {
-                // Diseño para DEFICIT
-                contenidoHTML = `
-                <div class="card" style="border: 2px solid #ff6b6b; background: rgba(45, 10, 78, 0.6);">
-                    <h2 style="color: #ff6b6b;">🔥 Tu Circuito Quema-Grasa</h2>
-                    <p style="color: #fff;">Como estás en déficit, añade este cardio HIIT al final de tu rutina:</p>
-                    <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
-                        <li>⚡ <strong>Burpees:</strong> 3 series de 12 repeticiones</li>
-                        <li>⚡ <strong>Mountain Climbers:</strong> 4 series de 30 segundos</li>
-                        <li>⚡ <strong>Saltar la cuerda:</strong> 10 minutos sin parar</li>
-                    </ul>
-                </div>`;
-            } else if (objetivo === 'superavit') {
-                // Diseño para VOLUMEN
-                contenidoHTML = `
-                <div class="card" style="border: 2px solid #4ade80; background: rgba(45, 10, 78, 0.6);">
-                    <h2 style="color: #4ade80;">💪 Tu Extra de Hipertrofia</h2>
-                    <p style="color: #fff;">Para aprovechar el volumen, añade estos ejercicios de fuerza:</p>
-                    <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
-                        <li>🦍 <strong>Peso Muerto:</strong> 5 series de 5 repeticiones (Pesado)</li>
-                        <li>🦍 <strong>Dominadas con peso:</strong> 4 series al fallo</li>
-                        <li>🦍 <strong>Descanso:</strong> 2 a 3 minutos entre series</li>
-                    </ul>
+            // Mostrar información del usuario
+            if (usuario && token && enlace) {
+                try {
+                    const userData = JSON.parse(usuario);
+                    enlace.textContent = `Cerrar Sesión (${userData.nombre})`;
+                    enlace.href = "#";
+                    enlace.onclick = function() {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                    };
+                } catch (error) {
+                    console.error('Error al cargar datos del usuario:', error);
+                    enlace.textContent = 'login';
+                    enlace.href = 'login.html';
+                    enlace.onclick = null;
+                }
+            }
+
+            // Lógica Recomendación Personalizada
+            const objetivo = localStorage.getItem('userObjetivo');
+            const calorias = localStorage.getItem('userCalorias');
+            const contenedor = document.getElementById('recomendacionPersonalizada');
+
+            if(objetivo && calorias) {
+                let contenidoHTML = '';
+                
+                if(objetivo === 'deficit') {
+                    // Diseño para DEFICIT
+                    contenidoHTML = `
+                    <div class="card" style="border: 2px solid #ff6b6b; background: rgba(45, 10, 78, 0.6);">
+                        <h2 style="color: #ff6b6b;">🔥 Tu Circuito Quema-Grasa</h2>
+                        <p style="color: #fff;">Como estás en déficit calórico (${calorias} kcal/día), añade este cardio HIIT al final de tu rutina:</p>
+                        <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
+                            <li>⚡ <strong>Burpees:</strong> 3 series de 12 repeticiones</li>
+                            <li>⚡ <strong>Mountain Climbers:</strong> 4 series de 30 segundos</li>
+                            <li>⚡ <strong>Saltar la cuerda:</strong> 10 minutos sin parar</li>
+                            <li>⚡ <strong>Descanso entre ejercicios:</strong> 15 segundos</li>
+                        </ul>
+                        <p style="margin-top: 1rem; color: #ff6b6b; font-size: 0.9rem;">
+                            💡 <strong>Consejo:</strong> Realiza este circuito 3 veces por semana después de tu entrenamiento de fuerza.
+                        </p>
+                    </div>`;
+                } else if (objetivo === 'superavit') {
+                    // Diseño para VOLUMEN
+                    contenidoHTML = `
+                    <div class="card" style="border: 2px solid #4ade80; background: rgba(45, 10, 78, 0.6);">
+                        <h2 style="color: #4ade80;">💪 Tu Extra de Hipertrofia</h2>
+                        <p style="color: #fff;">Para aprovechar tu superávit calórico (${calorias} kcal/día), añade estos ejercicios de fuerza:</p>
+                        <ul style="margin-top: 1rem; color: #ddd; line-height: 1.8;">
+                            <li>🦍 <strong>Peso Muerto:</strong> 5 series de 5 repeticiones (Pesado)</li>
+                            <li>🦍 <strong>Dominadas con peso:</strong> 4 series al fallo</li>
+                            <li>🦍 <strong>Press de Banca con pausa:</strong> 4 series de 6-8 repeticiones</li>
+                            <li>🦍 <strong>Descanso entre series:</strong> 2 a 3 minutos</li>
+                        </ul>
+                        <p style="margin-top: 1rem; color: #4ade80; font-size: 0.9rem;">
+                            💡 <strong>Consejo:</strong> Enfócate en la técnica y el progreso de pesos. Come proteína suficiente para la recuperación.
+                        </p>
+                    </div>`;
+                } else {
+                    // Si no tiene objetivo definido, mostrar recomendación general
+                    contenidoHTML = `
+                    <div class="card" style="border: 2px solid #667eea; background: rgba(45, 10, 78, 0.6);">
+                        <h2 style="color: #667eea;">🎯 Personaliza tu Entrenamiento</h2>
+                        <p style="color: #fff;">Calcula tu IMC y define tus objetivos para obtener rutinas personalizadas.</p>
+                        <a href="imc.html" class="btn" style="width: auto; display: inline-block; margin-top: 1rem; padding: 10px 20px;">
+                            Ir a Calculadora IMC
+                        </a>
+                    </div>`;
+                }
+                
+                contenedor.innerHTML = contenidoHTML;
+            } else {
+                // Si no tiene datos de objetivo
+                contenedor.innerHTML = `
+                <div class="card" style="border: 2px solid #667eea; background: rgba(45, 10, 78, 0.6);">
+                    <h2 style="color: #667eea;">🎯 Personaliza tu Entrenamiento</h2>
+                    <p style="color: #fff;">Calcula tu IMC y define tus objetivos para obtener rutinas personalizadas.</p>
+                    <a href="imc.html" class="btn" style="width: auto; display: inline-block; margin-top: 1rem; padding: 10px 20px;">
+                        Ir a Calculadora IMC
+                    </a>
                 </div>`;
             }
+        });
+
+        // Función para guardar progreso de ejercicios (opcional - para futura integración con API)
+        function guardarProgreso(ejercicio, series, repeticiones, peso) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // Aquí puedes integrar con tu API para guardar el progreso
+            console.log('Guardando progreso:', { ejercicio, series, repeticiones, peso });
             
-            contenedor.innerHTML = contenidoHTML;
+            // Ejemplo de cómo sería la llamada a la API:
+            /*
+            fetch('/api/ejercicios/progreso', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    ejercicio: ejercicio,
+                    series: series,
+                    repeticiones: repeticiones,
+                    peso: peso,
+                    fecha: new Date().toISOString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Progreso guardado:', data);
+            })
+            .catch(error => {
+                console.error('Error guardando progreso:', error);
+            });
+            */
+        }
+
+        // Ejemplo de uso (puedes agregar botones en cada ejercicio)
+        function marcarEjercicioCompletado(ejercicio) {
+            if (confirm(`¿Marcar "${ejercicio}" como completado?`)) {
+                guardarProgreso(ejercicio, 0, 0, 0);
+                alert(`¡${ejercicio} marcado como completado!`);
+            }
         }
     </script>
 </body>

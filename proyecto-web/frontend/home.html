@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <a href="#" class="logo"> 
+        <a href="home.html" class="logo"> 
             <img src="img/logo.png" alt="logo">
         </a>
         <nav class="nav-links">
@@ -22,39 +22,56 @@
     </header>
 
     <div class="fila-arriba">
-    <a href="ejercicios.html">
-        <img src="img/ejercicio.webp" alt="Foto" class="ejercicio" width="400">
-    </a>
-    <a href="alimentacion.html">
-        <img src="img/alimentacion.jpg" alt="Foto" class="Comida" width="400">
-    </a>
-</div>
+        <a href="ejercicios.html">
+            <img src="img/ejercicio.webp" alt="Ejercicios" class="ejercicio" width="400">
+        </a>
+        <a href="alimentacion.html">
+            <img src="img/alimentacion.jpg" alt="Alimentación" class="Comida" width="400">
+        </a>
+    </div>
 
-<div class="fila-abajo">
-    <a href="imc.html">
-        <img src="img/imc.jpg" alt="Foto" class="imc" width="400">
-    </a>
-<script>
-    // 1. Buscamos si hay un usuario guardado
-    const usuario = localStorage.getItem('usuarioActivo');
-    const enlace = document.getElementById('linkLogin');
+    <div class="fila-abajo">
+        <a href="imc.html">
+            <img src="img/imc.jpg" alt="Calculadora IMC" class="imc" width="400">
+        </a>
+    </div>
 
-    // 2. Si existe un usuario, cambiamos el texto
-    if (usuario && enlace) {
-        // Cambiamos "login" por el nombre del usuario
-        enlace.textContent = usuario; 
-        
-        // Opcional: Cambiamos el link para que ahora sirva para cerrar sesión
-        enlace.href = "#"; 
-        enlace.onclick = function() {
-            // Al hacer click, borramos el usuario (Cerrar sesión)
-            localStorage.removeItem('usuarioActivo');
-            window.location.reload(); // Recargamos la página
-        };
-    }
-</script>
-</body>
-</html>
-</div>
+    <script>
+        // Verificar autenticación y mostrar usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = localStorage.getItem('user'); // Cambiado a 'user'
+            const token = localStorage.getItem('token');  // Verificamos también el token
+            const enlace = document.getElementById('linkLogin');
+
+            // Si existe un usuario autenticado, cambiamos el texto
+            if (usuario && token && enlace) {
+                try {
+                    const userData = JSON.parse(usuario);
+                    // Cambiamos "login" por el nombre del usuario
+                    enlace.textContent = userData.nombre; 
+                    
+                    // Cambiamos el link para cerrar sesión
+                    enlace.href = "#"; 
+                    enlace.onclick = function() {
+                        // Al hacer click, borramos los datos de sesión
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html'; // Redirigimos al login
+                    };
+                } catch (error) {
+                    console.error('Error al cargar datos del usuario:', error);
+                    // Si hay error, mantenemos el login normal
+                    enlace.textContent = 'login';
+                    enlace.href = 'login.html';
+                    enlace.onclick = null;
+                }
+            } else {
+                // Si no está autenticado, aseguramos que el link vaya a login
+                enlace.textContent = 'login';
+                enlace.href = 'login.html';
+                enlace.onclick = null;
+            }
+        });
+    </script>
 </body>
 </html>

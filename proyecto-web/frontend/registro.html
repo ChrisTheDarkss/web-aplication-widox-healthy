@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Registro - Widox Gym</title>
+  <meta name="description" content="Registro seguro para el sistema de gestión del gimnasio Widox Gym">
+  <style>
+    :root{
+      --bg:#0f1724; /* navy */
+      --card:#0b1220;
+      --accent:#ff6b6b; /* coral */
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.04);
+      font-family: Inter, Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg, rgba(14,17,23,1) 0%, rgba(11,14,20,1) 100%);
+      color: #e6eef6;
+      display:grid;
+      place-items:center;
+      padding:2rem;
+    }
+    .container{
+      width:100%;
+      max-width:960px;
+      display:grid;
+      grid-template-columns:1fr 420px;
+      gap:2rem;
+      align-items:center;
+    }
+    .hero{
+      padding:2.5rem;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:0 10px 30px rgba(2,6,23,0.6);
+      min-height:360px;
+    }
+    .hero h1{margin:0 0 .5rem 0;font-size:clamp(1.25rem,2.5vw,2rem)}
+    .hero p{margin:0;color:var(--muted);line-height:1.4}
+    .gym-brand{
+      display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb199);display:grid;place-items:center;font-weight:700;color:#111
+    }
+
+    /* card */
+    .card{
+      background:var(--card);
+      padding:2rem;
+      border-radius:14px;
+      box-shadow:0 8px 20px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    form{display:flex;flex-direction:column;gap:.9rem}
+    label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:.35rem}
+    .input{
+      padding:.75rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit;outline:none;font-size:1rem
+    }
+    .input:focus{box-shadow:0 6px 18px rgba(15,103,195,0.08);border-color:rgba(255,255,255,0.06)}
+    .row{display:flex;gap:.6rem;align-items:center;justify-content:space-between}
+    .btn{
+      padding:.9rem 1rem;border-radius:12px;border:none;font-weight:600;cursor:pointer;background:linear-gradient(90deg,var(--accent),#ff9e7a);color:#111;font-size:1rem
+    }
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:.7rem;border-radius:10px}
+    .small{font-size:.85rem;color:var(--muted)}
+    a{color:inherit;text-decoration:none}
+    .muted{color:var(--muted)}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent);margin:1rem 0}
+
+    /* responsive */
+    @media (max-width:880px){
+      .container{grid-template-columns:1fr;max-width:520px}
+      .hero{order:2}
+    }
+
+    /* small helper */
+    .error{color:#ffb4b4;font-size:.85rem}
+    .success{color:#c7ffd8;font-size:.85rem}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <section class="hero" aria-labelledby="welcome">
+      <div class="gym-brand">
+        <div class="logo" aria-hidden>WG</div>
+        <div>
+          <h2 id="welcome">Widox Gym</h2>
+          <p class="muted">Únete a nuestra comunidad fitness y alcanza tus objetivos.</p>
+        </div>
+      </div>
+
+      <h1>Comienza tu Journey</h1>
+      <p>Regístrate para acceder a rutinas personalizadas, seguimiento de progreso y planes de alimentación adaptados a tus metas.</p>
+
+      <div class="divider" aria-hidden></div>
+
+      <ul class="muted" style="padding-left:1rem;margin:0">
+        <li>Rutinas personalizadas según tu nivel</li>
+        <li>Seguimiento detallado de tu IMC y progreso</li>
+        <li>Planes de alimentación para tus objetivos</li>
+        <li>Comunidad de apoyo y motivación</li>
+      </ul>
+    </section>
+
+    <aside class="card" aria-labelledby="register-title">
+      <h3 id="register-title" style="margin:0 0 .5rem 0">Crear Cuenta</h3>
+      <form id="registroForm" novalidate>
+        <div>
+          <label for="nombre">Nombre Completo</label>
+          <input id="nombre" name="nombre" class="input" type="text" placeholder="ej: Juan Pérez" required aria-required="true">
+          <div id="nombreError" class="error" style="display:none"></div>
+        </div>
+
+        <div>
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" class="input" type="email" placeholder="ej: juan@email.com" required aria-required="true">
+          <div id="emailError" class="error" style="display:none"></div>
+        </div>
+
+        <div>
+          <label for="password">Contraseña</label>
+          <input id="password" name="password" class="input" type="password" placeholder="●●●●●●●" required aria-required="true" minlength="6">
+          <div id="passError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="row" style="align-items:center">
+          <label style="display:flex;gap:.5rem;align-items:center;cursor:pointer">
+            <input type="checkbox" id="terms"> 
+            <span class="small">Acepto los <a href="#" class="muted">términos y condiciones</a></span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn">Crear Cuenta</button>
+
+        <div class="row" style="margin-top:.5rem;align-items:center">
+          <div class="divider" style="flex:1"></div>
+          <small class="small muted" style="padding:0 .6rem">o</small>
+          <div class="divider" style="flex:1"></div>
+        </div>
+
+        <button type="button" class="ghost" id="googleBtn" aria-label="Registrarse con Google">Registrarse con Google</button>
+
+        <p class="small muted" style="margin:.6rem 0 0">¿Ya tienes cuenta? <a href="login.html">Inicia Sesión</a></p>
+
+        <div id="formMessage" role="status" aria-live="polite" style="margin-top:.6rem"></div>
+      </form>
+    </aside>
+  </main>
+
+  <script>
+    // Configuración
+    const API_BASE = '/api';
+
+    // Elementos del DOM
+    const form = document.getElementById('registroForm');
+    const nombre = document.getElementById('nombre');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const terms = document.getElementById('terms');
+    const nombreError = document.getElementById('nombreError');
+    const emailError = document.getElementById('emailError');
+    const passError = document.getElementById('passError');
+    const formMessage = document.getElementById('formMessage');
+
+    // Funciones de utilidad
+    function showError(el, msg){ 
+        el.textContent = msg; 
+        el.style.display = 'block'; 
+    }
+    
+    function clearError(el){ 
+        el.textContent = ''; 
+        el.style.display = 'none'; 
+    }
+    
+    function showFormMessage(text, type) {
+        formMessage.textContent = text;
+        formMessage.className = type;
+        formMessage.style.display = 'block';
+    }
+
+    // Verificar si ya está autenticado
+    window.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        
+        if (token && user) {
+            // Si ya está autenticado, redirigir al home
+            window.location.href = 'home.html';
+        }
+    });
+
+    // Manejo del formulario
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Limpiar errores previos
+        clearError(nombreError);
+        clearError(emailError);
+        clearError(passError);
+        formMessage.textContent = '';
+        formMessage.className = '';
+
+        let isValid = true;
+
+        // Validaciones
+        if (!nombre.value.trim()) {
+            showError(nombreError, 'El nombre completo es requerido');
+            isValid = false;
+        } else if (nombre.value.trim().length < 2) {
+            showError(nombreError, 'El nombre debe tener al menos 2 caracteres');
+            isValid = false;
+        }
+
+        if (!email.value.trim()) {
+            showError(emailError, 'El correo electrónico es requerido');
+            isValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+            showError(emailError, 'Ingresa un correo electrónico válido');
+            isValid = false;
+        }
+
+        if (!password.value) {
+            showError(passError, 'La contraseña es requerida');
+            isValid = false;
+        } else if (password.value.length < 6) {
+            showError(passError, 'La contraseña debe tener al menos 6 caracteres');
+            isValid = false;
+        }
+
+        if (!terms.checked) {
+            showFormMessage('Debes aceptar los términos y condiciones', 'error');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Mostrar estado de carga
+        showFormMessage('Creando tu cuenta...', '');
+
+        try {
+            // Enviar datos al backend
+            const response = await fetch(`${API_BASE}/registro`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombre: nombre.value.trim(),
+                    email: email.value.trim(),
+                    password: password.value
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Registro exitoso
+                showFormMessage('¡Cuenta creada exitosamente! Redirigiendo...', 'success');
+                
+                // Guardar token y datos del usuario
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Redirigir al home después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 2000);
+                
+            } else {
+                // Error del servidor
+                showFormMessage(data.error || 'Error en el servidor', 'error');
+                
+                // Mostrar errores específicos de campos si vienen del servidor
+                if (data.field === 'email') {
+                    showError(emailError, data.error);
+                }
+            }
+            
+        } catch (error) {
+            // Error de conexión
+            console.error('Error de conexión:', error);
+            showFormMessage('Error de conexión. Verifica que el servidor esté ejecutándose.', 'error');
+        }
+    });
+
+    // Accesibilidad: submit con Enter en inputs
+    [nombre, email, password].forEach(input => {
+        input.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') {
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        });
+    });
+
+    // Botón de Google (placeholder)
+    document.getElementById('googleBtn').addEventListener('click', () => {
+        showFormMessage('Registro con Google no disponible temporalmente', 'error');
+    });
+
+    // Validación en tiempo real
+    nombre.addEventListener('blur', () => {
+        if (!nombre.value.trim()) {
+            showError(nombreError, 'El nombre completo es requerido');
+        } else {
+            clearError(nombreError);
+        }
+    });
+
+    email.addEventListener('blur', () => {
+        if (!email.value.trim()) {
+            showError(emailError, 'El correo electrónico es requerido');
+        } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+            showError(emailError, 'Ingresa un correo electrónico válido');
+        } else {
+            clearError(emailError);
+        }
+    });
+
+    password.addEventListener('blur', () => {
+        if (!password.value) {
+            showError(passError, 'La contraseña es requerida');
+        } else if (password.value.length < 6) {
+            showError(passError, 'La contraseña debe tener al menos 6 caracteres');
+        } else {
+            clearError(passError);
+        }
+    });
+  </script>
+</body>
+</html>
